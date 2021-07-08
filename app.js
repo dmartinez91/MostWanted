@@ -120,7 +120,12 @@ function searchByHeight(people) {
 }
 // by weight
 function searchByWeight(people) {
-  
+  let userWeightInput = promptFor("What weight would you like to search for?", autoValid);
+  let weightMatches = people.filter(function (el) {
+    return (el.weight === userWeightInput);
+  })
+
+  return weightMatches;
 }
 
 
