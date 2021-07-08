@@ -103,6 +103,18 @@ function searchBy(field, people) {
     }
      
   })
+
+  return fieldMatches;
+}
+
+function searchMultiple(fields, people) {
+  let currentMatches;
+  for (let i = 0; i < fields.length; i++) {
+    const field = fields[i];
+    currentMatches = searchBy(field, people);
+  }
+
+  return currentMatches;
 }
 
 
