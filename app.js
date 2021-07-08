@@ -97,6 +97,38 @@ function searchByEyeColor(people){
 
 //TODO: add other trait filter functions here.
 
+// Top priority searches
+/////////////////////////////////////////////////////////////////
+
+// by gender
+function searchByGender(people) {
+  let userGenderInput = promptFor("Which gender would you like to search for?", autoValid);
+  let genderMatches = people.filter(function (el) {
+    return (el.gender === userGenderInput);
+  })
+
+  return genderMatches;
+}
+// by height
+function searchByHeight(people) {
+  
+}
+// by weight
+function searchByWeight(people) {
+  
+}
+
+
+// Secondary priority searches
+//////////////////////////////////////////////////////////////////
+
+// by first name
+
+// by last name
+
+// by DOB
+
+// by occupation
 
 
 //#endregion
