@@ -83,50 +83,28 @@ function searchByName(people){
 }
 
 //unfinished function to search through an array of people to find matching eye colors. Use searchByName as reference.
-function searchByEyeColor(people){
-  let userEyeColorInput = prompt("what eye color are you looking for?").toLowerCase();
-  let eyeColorMatch = people.filter(function(el){
-    if(el.eyeColor === userEyeColorInput ){
-      return true;
-    } else {
-      return false; 
-    }
-  })
-  return eyeColorMatch;
-}
+
 
 //TODO: add other trait filter functions here.
 
 // Top priority searches
 /////////////////////////////////////////////////////////////////
 
-// by gender
-function searchByGender(people) {
-  let userGenderInput = promptFor("Which gender would you like to search for?", autoValid);
-  let genderMatches = people.filter(function (el) {
-    return (el.gender === userGenderInput);
-  })
 
-  return genderMatches;
-}
-// by height
-function searchByHeight(people) {
-  let userHeightInput = promptFor("What height would you like to search for?", autoValid);
-  let heightMatches = people.filter(function (el) {
-    return (el.height === userHeightInput);
-  })
+function searchBy(field, people) {
+  let userInput = promptFor(`What ${field} would you like to search for?`, autoValid);
+  let fieldMatches = people.filter(function (el, field) {
 
-  return heightMatches;
-}
-// by weight
-function searchByWeight(people) {
-  let userWeightInput = promptFor("What weight would you like to search for?", autoValid);
-  let weightMatches = people.filter(function (el) {
-    return (el.weight === userWeightInput);
+    switch(field){
+      case 'gender': return el.gender === userInput;
+      case 'height': return el.height === userInput;
+      case 'weight': return el.weight === userInput;
+      case 'eye color': return el.eyeColor === userInput;
+    }
+     
   })
-
-  return weightMatches;
 }
+
 
 
 // Secondary priority searches
