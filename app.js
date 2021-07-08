@@ -109,7 +109,9 @@ function searchBy(field, people) {
 
 function searchMultiple(fields, people) {
   let currentMatches;
-  for (let i = 0; i < fields.length; i++) {
+
+  // 5 is limitting search criteria to no more than 5
+  for (let i = 0; i < 5; i++) {
     const field = fields[i];
     currentMatches = searchBy(field, people);
   }
@@ -159,6 +161,90 @@ function displayPerson(person){
   
   alert(personInfo);
 }
+
+function displayFamily(people, person) {
+  let immediateFamily = findFamily(person, people);
+
+  //for 
+  let output = "";
+  for (const property in immediateFamily){
+    for (let i = 0; i < immediateFamily[property].length; i++) {
+      const relative = immediateFamily[property][i];
+      output += `${property}: ${relative.firstName} ${relative.lastName}\n`
+    }
+  }
+  alert(output);
+}
+
+function findFamily(person, people) {
+  // Person => "parents", "currentSpouse"
+  let parentIds = person.parents;
+  let currentSpouseId = person.currentSpouse;
+
+  // Find each person by id
+  
+  // Only 0 or 1 currentspouse
+  let currentSpouse = findById(currentSpouseId, people);
+
+  // 0, 1, or 2 parents
+  let parents = [];
+  let siblings = [];
+  for (let index = 0; index < parentIds.length; index++) {
+    const parentId = parentIds[index];
+    let currentParent = findById(parentId, people)[0];
+    let currentSiblings = findByParent(parentId, people);
+
+    
+    for (let k = 0; k < currentSiblings.length; k++) {
+      if(currentSiblings[k].id === person.id){
+        continue; 
+      }  
+      siblings.push(currentSiblings[k]);
+    }
+    parents.push(currentParent);
+  }
+
+
+
+  // Find children
+  let children = findByParent(person.id, people);
+
+  let family = {
+    "parents": parents,
+    "currentSpouse": currentSpouse,
+    "children": children,
+    "siblings": siblings
+  };
+
+  return family;
+
+  
+}
+
+function findById(id, people) {
+  let person = people.filter(function(el){
+    return (el.id === id);
+  })
+  return person;
+}
+
+function findByParent(parentId, people) {
+  let kids = people.filter(function(el){
+    // person's parents include the parentId
+    for (let i = 0; i < el.parents.length; i++) {
+      if (el.parents[i] === parentId) {
+        return true;
+      }
+    }
+    return false;
+  })
+  return kids;
+}
+
+
+
+
+
 
 //#endregion
 
