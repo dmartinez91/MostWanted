@@ -111,7 +111,12 @@ function searchByGender(people) {
 }
 // by height
 function searchByHeight(people) {
-  
+  let userHeightInput = promptFor("What height would you like to search for?", autoValid);
+  let heightMatches = people.filter(function (el) {
+    return (el.height === userHeightInput);
+  })
+
+  return heightMatches;
 }
 // by weight
 function searchByWeight(people) {
