@@ -146,16 +146,16 @@ function displayPeople(people){
 }
 
 function displayPerson(person){
-  // print all of the information about a person:
-  // height, weight, age, name, occupation, eye color.
-  let personInfo = "First Name: " + person.firstName + "\n";
-  personInfo += "Last Name: " + person.lastName + "\n";
-  personInfo += "Gender: " + person.gender + "\n";
-  personInfo += "DOB: " + person.dob + "\n";
-  personInfo += "Height: " + person.height + "\n";
-  personInfo += "Weight: " + person.weight + "\n";
-  personInfo += "Eye Color: " + person.eyeColor + "\n";
-  personInfo += "Occupation: " + person.occupation + "\n";
+  let personInfo = "";
+
+  for (const property in person) {
+    if (property === "id" ||
+        property === "parents" ||
+        property === "currentSpouse"){
+      continue;
+    }
+    personInfo += `${property}: ${person[property]}\n`;
+  }
   
   alert(personInfo);
 }
