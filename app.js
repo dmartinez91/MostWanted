@@ -389,4 +389,8 @@ function restrictedListValidation(input, allowableValues){
   return isValid;
 }
 
+function numericValication(input, lowerLimit=0, upperLimit=9001) {
+  return (input < upperLimit && input > lowerLimit);
+}
+
 //#endregion
