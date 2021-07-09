@@ -130,7 +130,7 @@ function findDescendants(person, people) {
 
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
-    child.children = findChildren(child, people);
+    child.children = findDescendants(child, people);
   }
 
   return children;
@@ -254,6 +254,29 @@ function findByParent(parentId, people) {
     return false;
   })
   return kids;
+}
+
+function displayDescendants(person, people) {
+  // Person: all their data, including a children field
+  // Each child will have a children field (ad nauseum)
+
+  // TODO: make recursive, to allow for multiple levels of grandchildren (i.e. great grandchildren, etc.)
+
+  person.children = findDescendants(person, people);
+
+  let output = "";
+
+  for (let i = 0; i < person.children.length; i++) {
+    const child = person.children[i];
+    output += `Child: ${child.firstName} ${child.lastName}\n`;
+
+    for (let j = 0; j < child.children.length; j++){
+      let grandchild = child.children[j];
+      output += `Grandchild: ${grandchild.firstName} ${grandchild.lastName}\n`;
+    }
+  }
+
+  alert(output);
 }
 
 
