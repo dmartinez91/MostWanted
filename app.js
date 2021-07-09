@@ -29,6 +29,8 @@ function app(people){
 // Menu function to call once you find who you are looking for
 function mainMenu(person, people){
 
+
+  
   /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
 
   if(!person){
@@ -36,17 +38,18 @@ function mainMenu(person, people){
     return app(people); // restart
   }
 
+  person = person[0];
   let displayOption = promptFor("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'", autoValid);
 
   switch(displayOption){
     case "info":
-    // TODO: get person's info
+      displayPerson(person)
     break;
     case "family":
-    // TODO: get person's family
+    displayFamily(people, person)
     break;
     case "descendants":
-    // TODO: get person's descendants
+    displayDescendants(person, people)
     break;
     case "restart":
     app(people); // restart
@@ -71,7 +74,7 @@ function searchByName(people){
   let lastName = promptFor("What is the person's last name?", autoValid);
 
   let foundPerson = people.filter(function(potentialMatch){
-    if(potentialMatch.firstName === firstName && potentialMatch.lastName === lastName){
+    if(potentialMatch.firstName.toLowerCase() === firstName.toLowerCase() && potentialMatch.lastName.toLowerCase() === lastName.toLowerCase()){
       return true;
     }
     else{
@@ -303,7 +306,7 @@ function promptFor(question, valid){
   do{
     response = prompt(question).trim();
     isValid = valid(response);
-  } while(response !== ""  ||  isValid === false)
+  } while(response === ""  ||  isValid === false)
   return response
 }
 
