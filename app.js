@@ -29,7 +29,11 @@ function app(people){
 // Menu function to call once you find who you are looking for
 function mainMenu(person, people){
 
-
+  if (person.length === 1) {
+    person = person[0];
+  } else {
+    person = displayPeople(person);
+  }
   
   /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
 
@@ -38,27 +42,27 @@ function mainMenu(person, people){
     return app(people); // restart
   }
 
-  person = person[0];
   let displayOption = promptFor("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'", autoValid);
 
   switch(displayOption){
     case "info":
       displayPerson(person)
-    break;
+      break;
     case "family":
-    displayFamily(people, person)
-    break;
+      displayFamily(people, person)
+      break;
     case "descendants":
-    displayDescendants(person, people)
-    break;
+      displayDescendants(person, people)
+      break;
     case "restart":
-    app(people); // restart
-    break;
+      app(people); // restart
+      break;
     case "quit":
-    return; // stop execution
+      return; // stop execution
     default:
-    return mainMenu(person, people); // ask again
+      return mainMenu(person, people); // ask again
   }
+  mainMenu([person], people);
 }
 
 
@@ -188,6 +192,20 @@ function findDescendants(person, people) {
 
 // alerts a list of people
 function displayPeople(people){
+
+  let output = "Found the following people: \n";
+  for (let i = 0; i < people.length; i++) {
+    const person = people[i];
+    output += `${i + 1}: ${person.firstName} ${person.lastName}\n`
+  }
+
+  output += `\n\nWhich person would you like to select?`;
+
+  let userInput = promptFor(output, autoValid);
+  let selectedPerson = people[userInput - 1];
+
+  return selectedPerson;
+
   alert(people.map(function(person){
     return person.firstName + " " + person.lastName;
   }).join("\n"));
