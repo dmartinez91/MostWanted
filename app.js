@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 
 
 //Menu functions.
@@ -17,8 +17,8 @@ function app(people){
     case 'no':
       searchResults = searchMenu(people);
       break;
-      default:
-    app(people); // restart app
+    default:
+      app(people); // restart app
       break;
   }
   
@@ -28,35 +28,23 @@ function app(people){
 
 // Menu function to call once you find who you are looking for
 function mainMenu(person, people){
+  // "person" comes in as an array of people. Need to extract just the one we want
+  person = getSinglePerson(person, people);
 
-  if (person.length === 1) {
-    person = person[0];
-  } else if (person.length === 0) {
-    alert("Did not find any results that match that criteria.");
-    app(people);
-  } else {
-    person = displayPeople(person);
-  }
-  
-  /* Here we pass in the entire person object that we found in our search, as well as the entire original dataset of people. We need people in order to find descendants and other information that the user may want. */
-
-  if(!person){
-    alert("Could not find that individual.");
-    return app(people); // restart
-  }
-
+  // PersonInfoOptions: a restrictive list of allowable values to supply to the validation function
   let personInfoOptions = ["info", "family", "descendants", "restart", "quit"];
-  let displayOption = promptFor("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'", restrictedListValidation, personInfoOptions);
+  let displayOption = promptFor("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'", restrictedListValidation, personInfoOptions).toLowerCase();
 
+  // Menu selection
   switch(displayOption){
     case "info":
-      displayPerson(person)
+      displayPerson(person); // Display individual info
       break;
     case "family":
-      displayFamily(people, person)
+      displayFamily(people, person); // Display immediate family
       break;
     case "descendants":
-      displayDescendants(person, people)
+      displayDescendants(person, people); // Display full lineage with person being the root
       break;
     case "restart":
       app(people); // restart
@@ -69,36 +57,43 @@ function mainMenu(person, people){
   mainMenu([person], people);
 }
 
+// Convert array into person object or restart app if no results found
+function getSinglePerson(person, people) {
+  if (person.length === 1) {
+    person = person[0];
+  } else if (person.length === 0) {
+    alert("Did not find any results that match that criteria.");
+    app(people);
+  } else {
+    person = displayPeople(person);
+  }
+  return person;
+}
 
-
+// Menu specifically used for non-name searches
 function searchMenu(people){
-  let userSearch = ''
+  let userSearch = '';
+  // Currently searchable fields
   let fieldOptions = ["gender", "height", "weight", "eye color", "done"];
   let fields = [];
   
-  // 5 is limitting search criteria to no more than 5
+  // Make sure the list of criteria doesn't exceed 5, and add valid criteria to "fields"
   while(userSearch != 'done' && fields.length < 5){
-    userSearch = promptFor('Which trait(s) would you like to search, type DONE when you are finished', restrictedListValidation, fieldOptions).toLowerCase()
+    userSearch = promptFor('Which trait(s) would you like to search?\n - gender\n - height\n - weight\n - eye color\n - Or type done when you are finished', restrictedListValidation, fieldOptions).toLowerCase();
     if (userSearch != 'done'){
-      fields.push(userSearch) 
+      fields.push(userSearch) ;
     }
   }
-  return searchMultiple(fields, people)
+  return searchMultiple(fields, people);
 }
-
-
 
 //#endregion
 
-
-
-
 //Filter functions.
-//Ideally you will have a function for each trait.
 /////////////////////////////////////////////////////////////////
 //#region 
 
-//nearly finished function used to search through an array of people to find matching first and last name and return a SINGLE person object.
+//Find a person by name. Returns an array of people, handled in the main menu
 function searchByName(people){
   let firstName = promptFor("What is the person's first name?", autoValid);
   let lastName = promptFor("What is the person's last name?", autoValid);
@@ -111,19 +106,10 @@ function searchByName(people){
       return false;
     }
   })
-  // TODO: find the person single person object using the name they entered.
   return foundPerson;
 }
 
-//unfinished function to search through an array of people to find matching eye colors. Use searchByName as reference.
-
-
-//TODO: add other trait filter functions here.
-
-// Top priority searches
-/////////////////////////////////////////////////////////////////\n  gender\n  height\n  weight\n  eye color
-
-
+// Search by a single parameter field
 function searchBy(field, people) {
   let genderOptions = ["male", "female"];
   let eyeColorOptions = ["black", "hazel", "brown", "blue", "green"];
@@ -136,27 +122,28 @@ function searchBy(field, people) {
     userInput = promptFor(`What ${field} would you like to search for?`, numericValidation);
   }
   let fieldMatches = people.filter(function (el) {
-
-
-    let whatever = false;
+    let match = false;
     switch(field){
-      case 'gender': whatever = (el.gender == userInput);
-      break;
-      case 'height': whatever = (el.height == userInput);
-      break;
-      case 'weight': whatever = (el.weight == userInput);
-      break;
-      case 'eye color': whatever =  (el.eyeColor == userInput);
-      break;
+      case 'gender': 
+        match = (el.gender == userInput);
+        break;
+      case 'height': 
+        match = (el.height == userInput);
+        break;
+      case 'weight': 
+        match = (el.weight == userInput);
+        break;
+      case 'eye color': 
+        match =  (el.eyeColor == userInput);
+        break;
     }
-    return whatever;
-
-     
+    return match;
   })
 
   return fieldMatches;
 }
 
+// Processes the multiple search criteria input by the user and continuously filters array down
 function searchMultiple(fields, people) {
   let currentMatches = people;
 
@@ -168,15 +155,14 @@ function searchMultiple(fields, people) {
   return currentMatches;
 }
 
+// Get all children and grandchildren of a given person
 function findDescendants(person, people) {
-  // only grandparent = Joy Madden, index 8
   let parentId = person.id;
-  let children = people.filter(function (el) {
-    for (let i = 0; i < el.parents.length; i++) {
-      return (el.parents[i] === parentId);
-    }
-  })
 
+  // Find all people that list the current person as a parent
+  let children = findChildren(parentId, people);
+
+  // Find all people that list the children as a parent
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
     child.children = findDescendants(child, people);
@@ -185,105 +171,16 @@ function findDescendants(person, people) {
   return children;
 }
 
-// Secondary priority searches
-//////////////////////////////////////////////////////////////////
-
-// by first name
-
-// by last name
-
-// by DOB
-
-// by occupation
-
-
-//#endregion
-
-//Display functions.
-//Functions for user interface.
-/////////////////////////////////////////////////////////////////
-//#region 
-
-// alerts a list of people
-function displayPeople(people){
-
-  let output = "Found the following people: \n";
-  let selectionOptions = [];
-  for (let i = 0; i < people.length; i++) {
-    const person = people[i];
-    output += `${i + 1}: ${person.firstName} ${person.lastName}\n`
-    selectionOptions.push(i + 1);
-  }
-
-  output += `\n\nWhich person would you like to select?`;
-
-  let userInput = promptFor(output, restrictedListValidation, selectionOptions);
-  let selectedPerson = people[userInput - 1];
-
-  return selectedPerson;
-}
-
-function displayPerson(person){
-  let personInfo = "";
-
-  for (const property in person) {
-    if (property === "id" ||
-        property === "parents" ||
-        property === "currentSpouse"){
-      continue;
-    }
-    personInfo += `${property}: ${person[property]}\n`;
-  }
-  
-  alert(personInfo);
-}
-
-function displayFamily(people, person) {
-  let immediateFamily = findFamily(person, people);
-
-  //for 
-  let output = "";
-  for (const property in immediateFamily){
-    for (let i = 0; i < immediateFamily[property].length; i++) {
-      const relative = immediateFamily[property][i];
-      output += `${property}: ${relative.firstName} ${relative.lastName}\n`
-    }
-  }
-  alert(output);
-}
-
+// Create a family object with the parents, spouse, children, and siblings of a given person
 function findFamily(person, people) {
-  // Person => "parents", "currentSpouse"
-  let parentIds = person.parents;
   let currentSpouseId = person.currentSpouse;
-
-  // Find each person by id
-  
-  // Only 0 or 1 currentspouse
   let currentSpouse = findById(currentSpouseId, people);
 
   // 0, 1, or 2 parents
-  let parents = [];
-  let siblings = [];
-  for (let index = 0; index < parentIds.length; index++) {
-    const parentId = parentIds[index];
-    let currentParent = findById(parentId, people)[0];
-    let currentSiblings = findByParent(parentId, people);
-
-    
-    for (let k = 0; k < currentSiblings.length; k++) {
-      if(currentSiblings[k].id === person.id){
-        continue; 
-      }  
-      siblings.push(currentSiblings[k]);
-    }
-    parents.push(currentParent);
-  }
-
-
-
-  // Find children
-  let children = findByParent(person.id, people);
+  let parentIds = person.parents;
+  let parents = findParents(parentIds, people);
+  let siblings = findSiblings(person.id, parentIds, people);
+  let children = findChildren(person.id, people);
 
   let family = {
     "parents": parents,
@@ -293,10 +190,58 @@ function findFamily(person, people) {
   };
 
   return family;
-
-  
 }
 
+// Find the people that match the values in parent ids
+function findParents(parentIds, people) {
+  let parents = [];
+  parents = people.filter(function (el) {
+    let isParent = false;
+    for (let i = 0; i < parentIds.length; i++) {
+      const parentId = parentIds[i];
+      if (parentId === el.id) {
+        isParent = true;
+      }
+    }
+    return isParent;
+  })
+  return parents;
+}
+
+// Find the people that have a given parentId listed as a parent
+function findChildren(parentId, people) {
+  let children = [];
+  children = people.filter(function (el) {
+    let isChild = false;
+    for (let i = 0; i < el.parents.length; i++) {
+      const currentParentId = el.parents[i];
+      if (parentId === currentParentId) {
+        isChild = true;
+      }
+    }
+    return isChild;
+  })
+  return children;
+}
+
+// Find all the people that share a parent id except the original person
+function findSiblings(personId, parentIds, people) {
+  let parents = findParents(parentIds, people);
+  let siblings = [];
+  for (let i = 0; i < parents.length; i++) {
+    const parent = parents[i];
+    let currentSiblings = findChildren(parent.id, people);
+    for (let j = 0; j < currentSiblings.length; j++) {
+      const sibling = currentSiblings[j];
+      if (sibling.id !== personId) {
+        siblings.push(sibling);
+      }
+    }
+  }
+  return siblings;
+}
+
+// Find the person with a given ID
 function findById(id, people) {
   let person = people.filter(function(el){
     return (el.id === id);
@@ -304,25 +249,70 @@ function findById(id, people) {
   return person;
 }
 
-function findByParent(parentId, people) {
-  let kids = people.filter(function(el){
-    // person's parents include the parentId
-    for (let i = 0; i < el.parents.length; i++) {
-      if (el.parents[i] === parentId) {
-        return true;
-      }
-    }
-    return false;
-  })
-  return kids;
+// Low priority search fields: first name, last name, DOB, age, occupation, etc.
+////////////////////////////////////////////////////////////////////////////////
+
+
+//#endregion
+
+//Display functions.
+//Functions for user interface.
+/////////////////////////////////////////////////////////////////
+//#region 
+
+// Display full list of people returned from a search
+function displayPeople(people){
+
+  let output = "Found the following people: \n";
+  for (let i = 0; i < people.length; i++) {
+    const person = people[i];
+    output += `${i + 1}: ${person.firstName} ${person.lastName}\n`;
+  }
+
+  output += `\nWhich person would you like to select?`;
+
+  let userInput = promptFor(output, numericValidation, [1, people.length]);
+  let selectedPerson = people[userInput - 1];
+
+  return selectedPerson;
 }
 
+// Retrieve and display information about the current person
+function displayPerson(person){
+  let personInfo = "";
+
+  for (const property in person) {
+    if (property === "id" ||
+        property === "parents" ||
+        property === "currentSpouse" ||
+        property === "children"){
+      continue;
+    }
+    personInfo += `${property}: ${person[property]}\n`;
+  }
+  
+  alert(personInfo);
+}
+
+// Retrieve and display immediate family members
+function displayFamily(people, person) {
+  let immediateFamily = findFamily(person, people);
+
+  // Properties are spouse, parent, child, sibling
+  // For each person in the array at a given property, add them to the output
+  let output = "";
+  for (const property in immediateFamily){
+    for (let i = 0; i < immediateFamily[property].length; i++) {
+      const relative = immediateFamily[property][i];
+      output += `${property}: ${relative.firstName} ${relative.lastName}\n`;
+    }
+  }
+  alert(output);
+}
+
+// Retrieve and display all descendants of a person
 function displayDescendants(person, people) {
-  // Person: all their data, including a children field
-  // Each child will have a children field (ad nauseum)
-
-  // TODO: make recursive, to allow for multiple levels of grandchildren (i.e. great grandchildren, etc.)
-
+  // Note: This function does not currently support descendants beyond grandchildren.
   person.children = findDescendants(person, people);
 
   let output = "";
@@ -330,10 +320,12 @@ function displayDescendants(person, people) {
     output = "This person has no descendants.";
   }
   else {
+    // First layer is children
     for (let i = 0; i < person.children.length; i++) {
       const child = person.children[i];
       output += `Child: ${child.firstName} ${child.lastName}\n`;
 
+      // Second layer is grandchildren
       for (let j = 0; j < child.children.length; j++){
         let grandchild = child.children[j];
         output += `Grandchild: ${grandchild.firstName} ${grandchild.lastName}\n`;
@@ -342,12 +334,6 @@ function displayDescendants(person, people) {
   }
   alert(output);
 }
-
-
-
-
-
-
 //#endregion
 
 
@@ -363,14 +349,14 @@ function displayDescendants(person, people) {
 //this function will continue to loop until the user enters something that is not an empty string("") or is considered valid based off the callback function(valid).
 function promptFor(question, valid, args=[]){
   do{
-    var response = prompt(question).trim();
+    var response = prompt(question).trim().toLowerCase();
   } while(!response ||  !valid(response, args))
-  return response
+  return response;
 }
 
 // helper function/callback to pass into promptFor to validate yes/no answers.
 function yesNo(input, args){
-  if(input.toLowerCase() == "yes" || input.toLowerCase() == "no"){
+  if(input == "yes" || input == "no"){
     return true;
   }
   else{
@@ -384,12 +370,11 @@ function autoValid(input, args){
   return true; // default validation only
 }
 
-//Unfinished validation function you can use for any of your custom validation callbacks.
-//can be used for things like eye color validation for example.
+// Verifies that an input exists within a list of allowable values (similar to a dropdown)
 function restrictedListValidation(input, allowableValues){
   let isValid = false;
   for (let i = 0; i < allowableValues.length; i++) {
-    const value = allowableValues[i];
+    const value = allowableValues[i].toLowerCase();
     if (input == value) {
       isValid = true;
     }
@@ -398,10 +383,18 @@ function restrictedListValidation(input, allowableValues){
   return isValid;
 }
 
+// Verifies that an input is a number with optional limits available
 function numericValidation(input, limits) {
+  // Default values
   let upperLimit = 9001;
   let lowerLimit = 0;
-  return (input < upperLimit && input > lowerLimit);
+  // If limits are provided, use those values instead
+  if (limits.length === 2) {
+    lowerLimit = limits[0];
+    upperLimit = limits[1];
+  }
+
+  return (input <= upperLimit && input >= lowerLimit);
 }
 
 //#endregion
