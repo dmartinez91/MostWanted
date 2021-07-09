@@ -144,11 +144,11 @@ function searchBy(field, people) {
 }
 
 function searchMultiple(fields, people) {
-  let currentMatches;
+  let currentMatches = people;
 
   for (let i = 0; i < fields.length; i++) {
     const field = fields[i];
-    currentMatches = searchBy(field, people);
+    currentMatches = searchBy(field, currentMatches);
   }
 
   return currentMatches;
@@ -314,17 +314,20 @@ function displayDescendants(person, people) {
   person.children = findDescendants(person, people);
 
   let output = "";
+  if (person.children.length === 0) {
+    output = "This person has no descendants.";
+  }
+  else {
+    for (let i = 0; i < person.children.length; i++) {
+      const child = person.children[i];
+      output += `Child: ${child.firstName} ${child.lastName}\n`;
 
-  for (let i = 0; i < person.children.length; i++) {
-    const child = person.children[i];
-    output += `Child: ${child.firstName} ${child.lastName}\n`;
-
-    for (let j = 0; j < child.children.length; j++){
-      let grandchild = child.children[j];
-      output += `Grandchild: ${grandchild.firstName} ${grandchild.lastName}\n`;
+      for (let j = 0; j < child.children.length; j++){
+        let grandchild = child.children[j];
+        output += `Grandchild: ${grandchild.firstName} ${grandchild.lastName}\n`;
+      }
     }
   }
-
   alert(output);
 }
 
