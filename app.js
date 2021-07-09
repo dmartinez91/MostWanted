@@ -31,6 +31,9 @@ function mainMenu(person, people){
 
   if (person.length === 1) {
     person = person[0];
+  } else if (person.length === 0) {
+    alert("Did not find any results that match that criteria.");
+    app(people);
   } else {
     person = displayPeople(person);
   }
