@@ -15,7 +15,7 @@ function app(people){
       searchResults = searchByName(people);
       break;
     case 'no':
-      // TODO: search by traits
+      searchResults = searchMenu(people);
       break;
       default:
     app(people); // restart app
@@ -61,7 +61,28 @@ function mainMenu(person, people){
   }
 }
 
+
+
+function searchMenu(people){
+  let userSearch = ''
+  let fields = [];
+  
+  // 5 is limitting search criteria to no more than 5
+  while(userSearch != 'done' && fields.length < 5){
+    userSearch = promptFor('Which trait(s) would you like to search, type DONE when you are finished', autoValid).toLowerCase()
+    if (userSearch != 'done'){
+      fields.push(userSearch) 
+    }
+  }
+  return searchMultiple(fields, people)
+}
+
+
+
 //#endregion
+
+
+
 
 //Filter functions.
 //Ideally you will have a function for each trait.
@@ -96,14 +117,22 @@ function searchByName(people){
 
 function searchBy(field, people) {
   let userInput = promptFor(`What ${field} would you like to search for?`, autoValid);
-  let fieldMatches = people.filter(function (el, field) {
+  let fieldMatches = people.filter(function (el) {
 
+
+    let whatever = false;
     switch(field){
-      case 'gender': return el.gender === userInput;
-      case 'height': return el.height === userInput;
-      case 'weight': return el.weight === userInput;
-      case 'eye color': return el.eyeColor === userInput;
+      case 'gender': whatever = (el.gender == userInput);
+      break;
+      case 'height': whatever = (el.height == userInput);
+      break;
+      case 'weight': whatever = (el.weight == userInput);
+      break;
+      case 'eye color': whatever =  (el.eyeColor == userInput);
+      break;
     }
+    return whatever;
+
      
   })
 
@@ -113,8 +142,7 @@ function searchBy(field, people) {
 function searchMultiple(fields, people) {
   let currentMatches;
 
-  // 5 is limitting search criteria to no more than 5
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < fields.length; i++) {
     const field = fields[i];
     currentMatches = searchBy(field, people);
   }
