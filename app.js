@@ -42,7 +42,8 @@ function mainMenu(person, people){
     return app(people); // restart
   }
 
-  let displayOption = promptFor("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'", autoValid);
+  let personInfoOptions = ["info", "family", "descendants", "restart", "quit"];
+  let displayOption = promptFor("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'", restrictedListValidation, personInfoOptions);
 
   switch(displayOption){
     case "info":
@@ -69,11 +70,12 @@ function mainMenu(person, people){
 
 function searchMenu(people){
   let userSearch = ''
+  let fieldOptions = ["gender", "height", "weight", "eye color", "done"];
   let fields = [];
   
   // 5 is limitting search criteria to no more than 5
   while(userSearch != 'done' && fields.length < 5){
-    userSearch = promptFor('Which trait(s) would you like to search, type DONE when you are finished', autoValid).toLowerCase()
+    userSearch = promptFor('Which trait(s) would you like to search, type DONE when you are finished', restrictedListValidation, fieldOptions).toLowerCase()
     if (userSearch != 'done'){
       fields.push(userSearch) 
     }
@@ -116,11 +118,20 @@ function searchByName(people){
 //TODO: add other trait filter functions here.
 
 // Top priority searches
-/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////\n  gender\n  height\n  weight\n  eye color
 
 
 function searchBy(field, people) {
-  let userInput = promptFor(`What ${field} would you like to search for?`, autoValid);
+  let genderOptions = ["male", "female"];
+  let eyeColorOptions = ["black", "hazel", "brown", "blue", "green"];
+  let userInput;
+  if (field === "gender") {
+    userInput = promptFor(`What ${field} would you like to search for?`, restrictedListValidation, genderOptions);
+  } else if (field === "eye color") {
+    userInput = promptFor(`What ${field} would you like to search for?`, restrictedListValidation, eyeColorOptions);
+  } else {
+    userInput = promptFor(`What ${field} would you like to search for?`, numericValidation);
+  }
   let fieldMatches = people.filter(function (el) {
 
 
@@ -194,21 +205,19 @@ function findDescendants(person, people) {
 function displayPeople(people){
 
   let output = "Found the following people: \n";
+  let selectionOptions = [];
   for (let i = 0; i < people.length; i++) {
     const person = people[i];
     output += `${i + 1}: ${person.firstName} ${person.lastName}\n`
+    selectionOptions.push(i + 1);
   }
 
   output += `\n\nWhich person would you like to select?`;
 
-  let userInput = promptFor(output, autoValid);
+  let userInput = promptFor(output, restrictedListValidation, selectionOptions);
   let selectedPerson = people[userInput - 1];
 
   return selectedPerson;
-
-  alert(people.map(function(person){
-    return person.firstName + " " + person.lastName;
-  }).join("\n"));
 }
 
 function displayPerson(person){
@@ -349,18 +358,18 @@ function displayDescendants(person, people) {
 //response: Will capture the user input.
 //isValid: Will capture the return of the validation function callback. true(the user input is valid)/false(the user input was not valid).
 //this function will continue to loop until the user enters something that is not an empty string("") or is considered valid based off the callback function(valid).
-function promptFor(question, valid){
+function promptFor(question, valid, args=[]){
   let response;
   let isValid;
   do{
     response = prompt(question).trim();
-    isValid = valid(response);
+    isValid = valid(response, args);
   } while(response === ""  ||  isValid === false)
   return response
 }
 
 // helper function/callback to pass into promptFor to validate yes/no answers.
-function yesNo(input){
+function yesNo(input, args){
   if(input.toLowerCase() == "yes" || input.toLowerCase() == "no"){
     return true;
   }
@@ -371,7 +380,7 @@ function yesNo(input){
 
 // helper function to pass in as default promptFor validation.
 //this will always return true for all inputs.
-function autoValid(input){
+function autoValid(input, args){
   return true; // default validation only
 }
 
@@ -381,7 +390,7 @@ function restrictedListValidation(input, allowableValues){
   let isValid = false;
   for (let i = 0; i < allowableValues.length; i++) {
     const value = allowableValues[i];
-    if (input === value) {
+    if (input == value) {
       isValid = true;
     }
   }
@@ -389,7 +398,9 @@ function restrictedListValidation(input, allowableValues){
   return isValid;
 }
 
-function numericValication(input, lowerLimit=0, upperLimit=9001) {
+function numericValidation(input, limits) {
+  let upperLimit = 9001;
+  let lowerLimit = 0;
   return (input < upperLimit && input > lowerLimit);
 }
 
