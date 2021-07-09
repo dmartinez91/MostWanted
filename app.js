@@ -119,7 +119,22 @@ function searchMultiple(fields, people) {
   return currentMatches;
 }
 
+function findDescendants(person, people) {
+  // only grandparent = Joy Madden, index 8
+  let parentId = person.id;
+  let children = people.filter(function (el) {
+    for (let i = 0; i < el.parents.length; i++) {
+      return (el.parents[i] === parentId);
+    }
+  })
 
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    child.children = findChildren(child, people);
+  }
+
+  return children;
+}
 
 // Secondary priority searches
 //////////////////////////////////////////////////////////////////
