@@ -377,8 +377,16 @@ function autoValid(input){
 
 //Unfinished validation function you can use for any of your custom validation callbacks.
 //can be used for things like eye color validation for example.
-function customValidation(input){
-  
+function restrictedListValidation(input, allowableValues){
+  let isValid = false;
+  for (let i = 0; i < allowableValues.length; i++) {
+    const value = allowableValues[i];
+    if (input === value) {
+      isValid = true;
+    }
+  }
+
+  return isValid;
 }
 
 //#endregion
