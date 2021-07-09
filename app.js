@@ -359,12 +359,9 @@ function displayDescendants(person, people) {
 //isValid: Will capture the return of the validation function callback. true(the user input is valid)/false(the user input was not valid).
 //this function will continue to loop until the user enters something that is not an empty string("") or is considered valid based off the callback function(valid).
 function promptFor(question, valid, args=[]){
-  let response;
-  let isValid;
   do{
-    response = prompt(question).trim();
-    isValid = valid(response, args);
-  } while(response === ""  ||  isValid === false)
+    var response = prompt(question).trim();
+  } while(!response ||  !valid(response, args))
   return response
 }
 
