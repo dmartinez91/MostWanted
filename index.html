@@ -8,7 +8,6 @@
     </style>
   </head>
   <body>
-    <button onclick="app(data)">Start Searching</button>
     <script src="data.js"></script>
     <script src="app.js"></script>
     <!-- Using multiple objects to control the pages without refreshing -->
@@ -120,7 +119,7 @@
       <br>
       <br>
 
-      <button>See Family</button>
+      <button onclick="showPage('familyPage', 'resultsPage')">See Family</button>
       <button onclick="newSearch('resultsPage')">New Search</button>
     </div>
 
@@ -144,6 +143,8 @@
       <h3>Grandchildren: </h3>
       <ul id="grandchildrenFamily">
       </ul>
+      <button onclick="showPage('resultsPage', 'familyPage')">Back to person</button>
+      <button onclick="newSearch('familyPage')">New Search</button>
     </div>
 
   </body>

@@ -490,6 +490,7 @@ function search(people) {
     showPage("noResultsPage", "searchPage");
   } else if (searchResults.length === 1) {
     prepareResultsPage(searchResults);
+    prepareFamilyPage(searchResults, people);
     showPage("resultsPage", "searchPage");
   } else {
     prepareMultipleResultsPage(searchResults);
@@ -503,6 +504,45 @@ function prepareMultipleResultsPage(results) {
     const result = results[i];
     let newItemText = `${result.firstName} ${result.lastName}`;
     addItemTo(newItemText, "option", "peopleSelection", result.id);
+  }
+}
+
+function prepareFamilyPage(personArray, people) {
+  let person = personArray[0];
+  let family = findFamily(person, people);
+  if (family["currentSpouse"].length == 1) {
+    let spouse = family["currentSpouse"][0];
+    document.getElementById("spouseFamily").value = `${spouse.firstName} ${spouse.lastName}`;
+  } else {
+    document.getElementById("spouseFamily").value = "No spouse on file";
+  }
+
+  document.getElementById("firstAndLastFamily").value = `${person.firstName} ${person.lastName}`
+  addEachTo(family["parents"], "li", "parentsFamily", "parents");
+  addEachTo(family["siblings"], "li", "siblingsFamily", "siblings");
+  addEachTo(family["children"], "li", "childrenFamily", "children");
+
+  // Get grandchildren from list of children
+  family["grandchildren"] = []
+  for (let i = 0; i < family["children"].length; i++) {
+    let grandchildren = findChildren(family["children"][i].id, people);
+    for (let j = 0; j < grandchildren.length; j++) {
+      const grandchild = grandchildren[j];
+      family["grandchildren"].push(grandchild);
+    }
+  }
+  addEachTo(family["grandchildren"], "li", "grandchildrenFamily", "grandchildren");
+}
+
+function addEachTo(array, type, addTo, field, value=-1) {
+  if (array.length > 0) {
+    for (let i = 0; i < array.length; i++) {
+      const person = array[i];
+      let personName = `${person.firstName} ${person.lastName}`
+      addItemTo(personName, type, addTo)
+    }
+  } else {
+    addItemTo(`No ${field} on file`, type, addTo);
   }
 }
 
@@ -520,6 +560,7 @@ function selectPerson(people) {
   let selectedPersonId = document.getElementById("peopleSelection").value;
   let selectedPerson = findById(Number(selectedPersonId), people);
   prepareResultsPage(selectedPerson);
+  prepareFamilyPage(selectedPerson, people);
   showPage("resultsPage", "multipleResultsPage");
 }
 
