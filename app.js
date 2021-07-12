@@ -492,9 +492,29 @@ function search(people) {
     prepareResultsPage(searchResults);
     showPage("resultsPage", "searchPage");
   } else {
+    prepareMultipleResultsPage(searchResults);
     showPage("multipleResultsPage", "searchPage");
   }
   return false;
+}
+
+function prepareMultipleResultsPage(results) {
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i];
+    let newItem = `${result.firstName} ${result.lastName}`;
+    let newOption = document.createElement("option");
+    let newItemNode = document.createTextNode(newItem);
+    newOption.appendChild(newItemNode);
+    newOption.value = result.id;
+    document.getElementById("peopleSelection").appendChild(newOption);
+  }
+}
+
+function selectPerson(people) {
+  let selectedPersonId = document.getElementById("peopleSelection").value;
+  let selectedPerson = findById(Number(selectedPersonId), people);
+  prepareResultsPage(selectedPerson);
+  showPage("resultsPage", "multipleResultsPage");
 }
 
 function showPage(pageToShow, pageToHide) {
