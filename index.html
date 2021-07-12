@@ -14,7 +14,7 @@
     <!-- Using multiple objects to control the pages without refreshing -->
 
     <!-- Search page - this will show first and be brought back up when a new search is started -->
-    <div id="searchPage">
+    <div id="searchPage" style="display:none">
       <h1>Search</h1>
       <br>
       <form>
@@ -62,7 +62,9 @@
     </div>
 
     <!-- No results page - shown from the search page if nobody is found -->
-    <div id="noResultsPage" style="display:none">
+    <div id="noResultsPage">
+      <h1>No results found!</h1>
+      <button>Start new search</button>
     </div>
 
     <!-- Multiple results page - shown from the search page if more than one match is found -->
