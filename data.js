@@ -123,7 +123,7 @@ const data = [
 		"lastName": "Madden",
 		"gender": "male",
 		"dob": "5/6/1937",
-		"height": 76,
+		"height": 76, 
 		"weight": 205,
 		"eyeColor": "black",
 		"occupation": "landscaper",
