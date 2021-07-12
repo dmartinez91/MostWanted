@@ -3,6 +3,7 @@
 
 //Menu functions.
 //Used for the overall flow of the application.
+//Deprecated, using HTML/CSS interface
 /////////////////////////////////////////////////////////////////
 //#region 
 
@@ -90,7 +91,6 @@ function searchMenu(people){
   // Currently searchable fields
   let fieldOptions = ["gender", "height", "weight", "eye color", "first name", "last name", "occupation", "dob", "age", "done"];
   let fields = [];
-  let selectedCriteria;
   let message = 'Which trait(s) would you like to search?\n - gender\n - height\n - weight\n - eye color\n - first name\n - last name\n - occupation\n - age\n - DOB\n - Or type done when you are finished'
   // Make sure the list of criteria doesn't exceed 5, and add valid criteria to "fields"
   while(userSearch != 'done' && fields.length < 5){
@@ -138,21 +138,25 @@ function searchByName(people){
 }
 
 // Search by a single parameter field
-function searchBy(field, people) {
+function searchBy(field, people, value=-1) {
   let genderOptions = ["male", "female"];
   let eyeColorOptions = ["black", "hazel", "brown", "blue", "green"];
   let message = `What ${field} would you like to search for?`;
   let userInput;
-  if (field === "gender") {
-    userInput = promptFor(message, restrictedListValidation, genderOptions);
-  } else if (field === "eye color") {
-    userInput = promptFor(message, restrictedListValidation, eyeColorOptions);
-  } else if (field === "first name" || field === "last name" || field === "occupation") {
-    userInput = promptFor(message, autoValid);
-  } else if (field === "dob") {
-    userInput = promptFor((message + "\n(d/m/yyyy)"), dobVerification);
+  if (value === -1) {
+    if (field === "gender") {
+      userInput = promptFor(message, restrictedListValidation, genderOptions);
+    } else if (field === "eye color") {
+      userInput = promptFor(message, restrictedListValidation, eyeColorOptions);
+    } else if (field === "first name" || field === "last name" || field === "occupation") {
+      userInput = promptFor(message, autoValid);
+    } else if (field === "dob") {
+      userInput = promptFor((message + "\n(d/m/yyyy)"), dobVerification);
+    } else {
+      userInput = promptFor(message, numericValidation);
+    }
   } else {
-    userInput = promptFor(message, numericValidation);
+    userInput = value;
   }
   
   let fieldMatches = people.filter(function (el) {
@@ -468,4 +472,93 @@ function dobVerification(input, args) {
   return true;
 }
 
+//#endregion
+
+//#region Web page functions
+function search(people) {
+  let fields = getInputs();
+
+  let searchResults = people;
+  for (const property in fields) {
+    const value = fields[property];
+    if (value != -1) {
+      searchResults = searchBy(property, searchResults, value);
+    }
+  }
+
+  if (searchResults.length === 0) {
+    showPage("noResultsPage", "searchPage");
+  } else if (searchResults.length === 1) {
+    prepareResultsPage(searchResults);
+    showPage("resultsPage", "searchPage");
+  } else {
+    showPage("multipleResultsPage", "searchPage");
+  }
+  return false;
+}
+
+function showPage(pageToShow, pageToHide) {
+  document.getElementById(pageToHide).style.display = "none";
+  document.getElementById(pageToShow).style.display = "block";
+  return false;
+}
+
+function newSearch(currentPage) {
+  prepareSearchPage();
+  showPage("searchPage", currentPage);
+  return false;
+}
+
+function prepareResultsPage(results) {
+  // Get the person out of the array of people
+  let person = results[0];
+
+  // Reassign the values on all the fields
+  document.getElementById("fnameResults").innerHTML = person["firstName"];
+  document.getElementById("lnameResults").innerHTML = person["lastName"];
+  document.getElementById("genderResults").innerHTML = person["gender"];
+  document.getElementById("dobResults").innerHTML = person["dob"];
+  document.getElementById("heightResults").innerHTML = person["height"];
+  document.getElementById("weightResults").innerHTML = person["weight"];
+  document.getElementById("eyecolorResults").innerHTML = person["eyeColor"];
+  document.getElementById("occupationResults").innerHTML = person["occupation"];
+  return false;
+}
+
+function prepareSearchPage() {
+  // Empty all fields
+  document.getElementById("fnameSearch").value = "";
+  document.getElementById("lnameSearch").value = "";
+  document.getElementById("genderSearch").selectedIndex = "";
+  document.getElementById("dobSearch").value = "";
+  document.getElementById("heightSearch").value = "";
+  document.getElementById("weightSearch").value = "";
+  document.getElementById("eyecolorSearch").selectedIndex = "";
+  document.getElementById("occupationSearch").value = "";
+  return false;
+}
+
+function getInputs() {
+  let fields = {};
+
+  // Retrieve data from page
+  fields["first name"] = getValueOrDefault(document.getElementById("fnameSearch").value);
+  fields["last name"] = getValueOrDefault(document.getElementById("lnameSearch").value);
+  fields["gender"] = getValueOrDefault(document.getElementById("genderSearch").value);
+  fields["dob"] = getValueOrDefault(document.getElementById("dobSearch").value);
+  fields["height"] = getValueOrDefault(document.getElementById("heightSearch").value);
+  fields["weight"] = getValueOrDefault(document.getElementById("weightSearch").value);
+  fields["eye color"] = getValueOrDefault(document.getElementById("eyecolorSearch").value);
+  fields["occupation"] = getValueOrDefault(document.getElementById("occupationSearch").value);
+
+  return fields;
+}
+
+function getValueOrDefault(value) {
+  if (value){
+    return value;
+  } else {
+    return -1;
+  }
+}
 //#endregion
