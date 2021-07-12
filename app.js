@@ -98,8 +98,18 @@ function searchMenu(people){
     selectedCriteria = (`selected criteria\n ${userSearch}`)
     
     if (userSearch != 'done'){
-      fields.push(userSearch) ;
-    message += `\n selected criteria: ${userSearch} `
+      let isAlreadyInFields = false;
+      for (let i = 0; i < fields.length; i++) {
+        const currentField = fields[i];
+        if (currentField === userSearch) {
+          isAlreadyInFields = true;
+          alert(`${userSearch} has already been added, please add a different criteria.`);
+        }
+      }
+      if (!isAlreadyInFields) {
+        fields.push(userSearch);
+        message += `\n selected criteria: ${userSearch} `
+      }
     }
   }
   return searchMultiple(fields, people);
@@ -144,6 +154,7 @@ function searchBy(field, people) {
   } else {
     userInput = promptFor(message, numericValidation);
   }
+  
   let fieldMatches = people.filter(function (el) {
     let match = false;
     switch(field){
