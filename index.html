@@ -3,10 +3,75 @@
   <head>
     <meta charset="utf-8">
     <title>devCodeCamp &middot; Most Wanted</title>
+    <style>
+
+    </style>
   </head>
   <body>
     <button onclick="app(data)">Start Searching</button>
     <script src="data.js"></script>
     <script src="app.js"></script>
+    <!-- Using multiple objects to control the pages without refreshing -->
+
+    <!-- Search page - this will show first and be brought back up when a new search is started -->
+    <div id="searchPage">
+      <h1>Search</h1>
+      <br>
+      <form>
+        <label for="fnameSearch">First Name: </label>
+        <input type="text" id="fnameSearch" name="fnameSearch">
+        <br>
+
+        <label for="lnameSearch">Last Name: </label>
+        <input type="text" id="lnameSearch" name="lnameSearch">
+        <br>
+
+        <label for="genderSearch">Sex: </label>
+        <select id="genderSearch" name="genderSearch">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <br>
+
+        <label for="dobSearch">DOB: </label>
+        <input type="text" id="dobSearch" name="dobSearch">
+        <br>
+
+        <label for="heightSearch">Height: </label>
+        <input type="number" id="heightSearch" name="heightSearch">
+        <br>
+
+        <label for="weightSearch">Height: </label>
+        <input type="number" id="weightSearch" name="weightSearch">
+        <br>
+
+        <label for="eyecolorSearch">Eye Color: </label>
+        <select id="eyecolorSearch" name="eyecolorSearch"><!--brown, black, hazel, blue, green-->
+          <option value="black">Black</option>
+          <option value="blue">Blue</option>
+          <option value="brown">Brown</option>
+          <option value="green">Green</option>
+          <option value="hazel">Hazel</option>
+        </select>
+        <br>
+
+        <label for="occupationSearch">Occupation: </label>
+        <input type="text" id="occupationSearch" name="occupationSearch">
+      </form>
+      <button onclick="return show('intermediateResults','search');">See results</button>
+    </div>
+
+    <!-- No results page - shown from the search page if nobody is found -->
+    <div id="noResultsPage" style="display:none">
+    </div>
+
+    <!-- Multiple results page - shown from the search page if more than one match is found -->
+    <div id="multipleResultsPage" style="display:none">
+    </div>
+
+    <!-- Results page - shown from the search page or multiple results page when one person is found -->
+    <div id="resultsPage" style="display:none">
+    </div>
+
   </body>
 </html>
