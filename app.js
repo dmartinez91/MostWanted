@@ -74,12 +74,12 @@ function getSinglePerson(person, people) {
 function searchMenu(people){
   let userSearch = '';
   // Currently searchable fields
-  let fieldOptions = ["gender", "height", "weight", "eye color", "done"];
+  let fieldOptions = ["gender", "height", "weight", "eye color", "first name", "last name", "occupation", "dob", "age", "done"];
   let fields = [];
   
   // Make sure the list of criteria doesn't exceed 5, and add valid criteria to "fields"
   while(userSearch != 'done' && fields.length < 5){
-    userSearch = promptFor('Which trait(s) would you like to search?\n - gender\n - height\n - weight\n - eye color\n - Or type done when you are finished', restrictedListValidation, fieldOptions).toLowerCase();
+    userSearch = promptFor('Which trait(s) would you like to search?\n - gender\n - height\n - weight\n - eye color\n - first name\n - last name\n - occupation\n - age\n - DOB\n - Or type done when you are finished', restrictedListValidation, fieldOptions).toLowerCase();
     if (userSearch != 'done'){
       fields.push(userSearch) ;
     }
@@ -113,13 +113,18 @@ function searchByName(people){
 function searchBy(field, people) {
   let genderOptions = ["male", "female"];
   let eyeColorOptions = ["black", "hazel", "brown", "blue", "green"];
+  let message = `What ${field} would you like to search for?`;
   let userInput;
   if (field === "gender") {
-    userInput = promptFor(`What ${field} would you like to search for?`, restrictedListValidation, genderOptions);
+    userInput = promptFor(message, restrictedListValidation, genderOptions);
   } else if (field === "eye color") {
-    userInput = promptFor(`What ${field} would you like to search for?`, restrictedListValidation, eyeColorOptions);
+    userInput = promptFor(message, restrictedListValidation, eyeColorOptions);
+  } else if (field === "first name" || field === "last name" || field === "occupation") {
+    userInput = promptFor(message, autoValid);
+  } else if (field === "dob") {
+    userInput = promptFor((message + "\n(d/m/yyyy)"), dobVerification);
   } else {
-    userInput = promptFor(`What ${field} would you like to search for?`, numericValidation);
+    userInput = promptFor(message, numericValidation);
   }
   let fieldMatches = people.filter(function (el) {
     let match = false;
@@ -135,6 +140,21 @@ function searchBy(field, people) {
         break;
       case 'eye color': 
         match =  (el.eyeColor == userInput);
+        break;
+      case 'first name':
+        match = (el.firstName == userInput);
+        break;
+      case 'last name':
+        match = (el.lastName == userInput);
+        break;
+      case 'occupation':
+        match = (el.occupation == userInput);
+        break;
+      case 'dob':
+        match = (el.dob == userInput);
+        break;
+      case 'age':
+        match = (getAge(el.dob) == userInput);
         break;
     }
     return match;
@@ -395,6 +415,26 @@ function numericValidation(input, limits) {
   }
 
   return (input <= upperLimit && input >= lowerLimit);
+}
+
+// Verifies user provided valid date string
+function dobVerification(input, args) {
+  let dateParts = input.split('/');
+  // if the dateparts isn't 3 items long, it's definitely formatted wrong
+  if (dateParts.length != 3) {
+    return false;
+  }
+  
+  // Make sure each of the parts of the date string are appropriate
+  let selectedDate = new Date(input);
+  let selectedDay = selectedDate.getDate();
+  let selectedMonth = selectedDate.getMonth();
+  let selectedYear = selectedDate.getFullYear();
+  if (!selectedDay || !selectedMonth || !selectedYear){
+    return false;
+  }
+
+  return true;
 }
 
 //#endregion
