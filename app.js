@@ -71,6 +71,20 @@ function getSinglePerson(person, people) {
 }
 
 // Menu specifically used for non-name searches
+function getAge(dateString) 
+{
+    let today = new Date();
+    let birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let daysUntilBirthDay = today.getMonth() - birthDate.getMonth();
+    if (daysUntilBirthDay < 0 || (daysUntilBirthDay === 0 && today.getDate() < birthDate.getDate())) 
+    {
+        age--;
+    }
+    return age;
+}
+
+
 function searchMenu(people){
   let userSearch = '';
   // Currently searchable fields
@@ -271,6 +285,8 @@ function findById(id, people) {
 
 // Low priority search fields: first name, last name, DOB, age, occupation, etc.
 ////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 //#endregion
