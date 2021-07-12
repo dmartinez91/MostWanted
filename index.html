@@ -62,13 +62,22 @@
     </div>
 
     <!-- No results page - shown from the search page if nobody is found -->
-    <div id="noResultsPage">
+    <div id="noResultsPage" style="display:none">
       <h1>No results found!</h1>
       <button>Start new search</button>
     </div>
 
     <!-- Multiple results page - shown from the search page if more than one match is found -->
-    <div id="multipleResultsPage" style="display:none">
+    <div id="multipleResultsPage">
+      <h1>Multiple results found!</h1>
+      <h3>Please select a person: </h3>
+      <br>
+      <select id="peopleSelection" name="peopleSelection">
+        <option value="per1">Person 1</option>
+        <option value="per2">Person 2</option>
+        <option value="per3">Person 3</option>
+      </select>
+      <button>Select person</button>
     </div>
 
     <!-- Results page - shown from the search page or multiple results page when one person is found -->
