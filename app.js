@@ -95,7 +95,7 @@ function searchMenu(people){
   // Make sure the list of criteria doesn't exceed 5, and add valid criteria to "fields"
   while(userSearch != 'done' && fields.length < 5){
     userSearch = promptFor(message, restrictedListValidation, fieldOptions).toLowerCase();
-    selectedCriteria = (`selected criteria\n ${userSearch}`)
+    let selectedCriteria = (`selected criteria\n ${userSearch}`)
     
     if (userSearch != 'done'){
       let isAlreadyInFields = false;
