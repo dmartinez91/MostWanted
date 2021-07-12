@@ -68,7 +68,7 @@
     </div>
 
     <!-- Multiple results page - shown from the search page if more than one match is found -->
-    <div id="multipleResultsPage">
+    <div id="multipleResultsPage" style="display:none">
       <h1>Multiple results found!</h1>
       <h3>Please select a person: </h3>
       <br>
@@ -81,7 +81,28 @@
     </div>
 
     <!-- Results page - shown from the search page or multiple results page when one person is found -->
-    <div id="resultsPage" style="display:none">
+    <div id="resultsPage">
+      <label for="fnameResults">First Name: </label>
+      <p id="fnameResults"></p>
+      <label for="lnameResults">Last Name: </label>
+      <p id="lnameResults"></p>
+      <label for="genderResults">Sex: </label>
+      <p id="genderResults"></p>
+      <label for="dobResults">DOB: </label>
+      <p id="dobResults"></p>
+      <label for="heightResults">Height: </label>
+      <p id="heightResults"></p>
+      <label for="weightResults">Weight: </label>
+      <p id="weightResults"></p>
+      <label for="eyecolorResults">Eye Color: </label>
+      <p id="eyecolorResults"></p>
+      <label for="occupationResults">Occupation: </label>
+      <p id="occupationResults"></p>
+      <br>
+      <br>
+
+      <button>See Family</button>
+      <button>New Search</button>
     </div>
 
   </body>
