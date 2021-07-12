@@ -501,13 +501,19 @@ function search(people) {
 function prepareMultipleResultsPage(results) {
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
-    let newItem = `${result.firstName} ${result.lastName}`;
-    let newOption = document.createElement("option");
-    let newItemNode = document.createTextNode(newItem);
-    newOption.appendChild(newItemNode);
-    newOption.value = result.id;
-    document.getElementById("peopleSelection").appendChild(newOption);
+    let newItemText = `${result.firstName} ${result.lastName}`;
+    addItemTo(newItemText, "option", "peopleSelection", result.id);
   }
+}
+
+function addItemTo(textValue, type, addTo, value=-1) {
+  let newItemText = document.createTextNode(textValue);
+  let newItem = document.createElement(type);
+  newItem.appendChild(newItemText);
+  if (value != -1) {
+    newItem.value = value;
+  }
+  document.getElementById(addTo).appendChild(newItem);
 }
 
 function selectPerson(people) {
