@@ -90,12 +90,16 @@ function searchMenu(people){
   // Currently searchable fields
   let fieldOptions = ["gender", "height", "weight", "eye color", "first name", "last name", "occupation", "dob", "age", "done"];
   let fields = [];
-  
+  let selectedCriteria;
+  let message = 'Which trait(s) would you like to search?\n - gender\n - height\n - weight\n - eye color\n - first name\n - last name\n - occupation\n - age\n - DOB\n - Or type done when you are finished'
   // Make sure the list of criteria doesn't exceed 5, and add valid criteria to "fields"
   while(userSearch != 'done' && fields.length < 5){
-    userSearch = promptFor('Which trait(s) would you like to search?\n - gender\n - height\n - weight\n - eye color\n - first name\n - last name\n - occupation\n - age\n - DOB\n - Or type done when you are finished', restrictedListValidation, fieldOptions).toLowerCase();
+    userSearch = promptFor(message, restrictedListValidation, fieldOptions).toLowerCase();
+    selectedCriteria = (`selected criteria\n ${userSearch}`)
+    
     if (userSearch != 'done'){
       fields.push(userSearch) ;
+    message += `\n selected criteria: ${userSearch} `
     }
   }
   return searchMultiple(fields, people);
