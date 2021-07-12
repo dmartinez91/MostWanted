@@ -81,7 +81,8 @@
     </div>
 
     <!-- Results page - shown from the search page or multiple results page when one person is found -->
-    <div id="resultsPage">
+    <div id="resultsPage" style="display:none">
+      <h1>Results:</h1>
       <label for="fnameResults">First Name: </label>
       <p id="fnameResults"></p>
       <label for="lnameResults">Last Name: </label>
@@ -103,6 +104,28 @@
 
       <button>See Family</button>
       <button>New Search</button>
+    </div>
+
+    <!-- Family page - shown from the search page to show family and relationships -->
+    <div id="familyPage">
+      <h1>Family</h1>
+      <h3>Selected individual: <h3>
+      <p id="firstAndLastFamily"></p>
+
+      <h3>Current Spouse: </h3>
+      <p id="spouseFamily"></p>
+      <h3>Parents: </h3>
+      <ul id="parentsFamily">
+      </ul>
+      <h3>Siblings: </h3>
+      <ul id="siblingsFamily">
+      </ul>
+      <h3>Children: </h3>
+      <ul id="childrenFamily">
+      </ul>
+      <h3>Grandchildren: </h3>
+      <ul id="grandchildrenFamily">
+      </ul>
     </div>
 
   </body>
