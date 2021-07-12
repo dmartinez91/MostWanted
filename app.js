@@ -160,10 +160,10 @@ function searchBy(field, people) {
         match =  (el.eyeColor == userInput);
         break;
       case 'first name':
-        match = (el.firstName == userInput);
+        match = (el.firstName.toLowerCase() == userInput);
         break;
       case 'last name':
-        match = (el.lastName == userInput);
+        match = (el.lastName.toLowerCase() == userInput);
         break;
       case 'occupation':
         match = (el.occupation == userInput);
@@ -448,7 +448,7 @@ function dobVerification(input, args) {
   // Make sure each of the parts of the date string are appropriate
   let selectedDate = new Date(input);
   let selectedDay = selectedDate.getDate();
-  let selectedMonth = selectedDate.getMonth();
+  let selectedMonth = selectedDate.getMonth() + 1;
   let selectedYear = selectedDate.getFullYear();
   if (!selectedDay || !selectedMonth || !selectedYear){
     return false;
