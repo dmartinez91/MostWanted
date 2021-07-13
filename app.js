@@ -632,11 +632,13 @@ function prepareSearchPage() {
 
 // Get all of the people found in the search into dropdown
 function prepareMultipleResultsPage(results) {
+  resetMultipleResultsPage();
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
     let newItemText = `${result.firstName} ${result.lastName}`;
-    addItemTo(newItemText, "option", "peopleSelection", result.id, "", -1);
+    addItemTo(newItemText, "option", "peopleSelection", result.id, "multipleResults", i);
   }
+  document.getElementById("multipleResultsCount").value = results.length;
 }
 
 // Fill out data for results page before showing
@@ -699,6 +701,11 @@ function resetFamilyPage() {
   resetList("siblings", "numberOfSiblings");
   resetList("children", "numberOfChildren");
   resetList("grandchildren", "numberOfGrandchildren");
+}
+
+// Reset all fields on multiple results page
+function resetMultipleResultsPage() {
+  resetList("multipleResults", "multipleResultsCount")
 }
 
 // Navigate back to the search page after clearing it
