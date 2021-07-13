@@ -664,13 +664,13 @@ function prepareFamilyPage(personArray, people) {
   let family = findFamily(person, people);
   if (family["currentSpouse"].length == 1) {
     let spouse = family["currentSpouse"][0];
-    document.getElementById("spouseFamily").value = `${spouse.firstName} ${spouse.lastName}`;
+    document.getElementById("spouseFamily").innerHTML = `${spouse.firstName} ${spouse.lastName}`;
   } else {
-    document.getElementById("spouseFamily").value = "No spouse on file";
+    document.getElementById("spouseFamily").innerHTML = "No spouse on file";
   }
 
   // Need to keep track of counts to get rid of elements during reset
-  document.getElementById("firstAndLastFamily").value = `${person.firstName} ${person.lastName}`;
+  document.getElementById("firstAndLastFamily").innerHTML = `${person.firstName} ${person.lastName}`;
   addEachTo(family["parents"], "li", "parentsFamily", "parents");
   document.getElementById("numberOfParents").value = `${family["parents"].length}`;
   addEachTo(family["siblings"], "li", "siblingsFamily", "siblings");
