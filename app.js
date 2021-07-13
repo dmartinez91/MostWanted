@@ -391,8 +391,6 @@ function displayDescendants(person, people) {
 }
 //#endregion
 
-
-
 //Validation functions.
 //Functions to validate user input.
 /////////////////////////////////////////////////////////////////
@@ -453,7 +451,7 @@ function numericValidation(input, limits) {
 }
 
 // Verifies user provided valid date string
-function dobVerification(input, args) {
+function dobVerification(input, args=[]) {
   let dateParts = input.split('/');
   // if the dateparts isn't 3 items long, it's definitely formatted wrong
   if (dateParts.length != 3) {
@@ -474,7 +472,17 @@ function dobVerification(input, args) {
 
 //#endregion
 
-//#region Web page functions
+//Web page functions.
+//Functions utilized by the HTML to display content.
+/////////////////////////////////////////////////////////////////
+//#region
+
+
+//
+// Search Implementation
+//
+
+// Initiate search from main page
 function search(people) {
   let fields = getInputs();
 
@@ -499,63 +507,44 @@ function search(people) {
   return false;
 }
 
-function prepareMultipleResultsPage(results) {
-  for (let i = 0; i < results.length; i++) {
-    const result = results[i];
-    let newItemText = `${result.firstName} ${result.lastName}`;
-    addItemTo(newItemText, "option", "peopleSelection", result.id);
-  }
-}
-
-function prepareFamilyPage(personArray, people) {
-  let person = personArray[0];
-  let family = findFamily(person, people);
-  if (family["currentSpouse"].length == 1) {
-    let spouse = family["currentSpouse"][0];
-    document.getElementById("spouseFamily").value = `${spouse.firstName} ${spouse.lastName}`;
-  } else {
-    document.getElementById("spouseFamily").value = "No spouse on file";
-  }
-
-  document.getElementById("firstAndLastFamily").value = `${person.firstName} ${person.lastName}`
-  addEachTo(family["parents"], "li", "parentsFamily", "parents");
-  addEachTo(family["siblings"], "li", "siblingsFamily", "siblings");
-  addEachTo(family["children"], "li", "childrenFamily", "children");
-
-  // Get grandchildren from list of children
-  family["grandchildren"] = []
-  for (let i = 0; i < family["children"].length; i++) {
-    let grandchildren = findChildren(family["children"][i].id, people);
-    for (let j = 0; j < grandchildren.length; j++) {
-      const grandchild = grandchildren[j];
-      family["grandchildren"].push(grandchild);
+// Get search values from search page
+function getInputs() {
+  // Only need to validate DOB. Everything else is either a list or would be autovalidated
+  let dob = getValueOrDefault(document.getElementById("dobSearch").value);
+  if (dob != -1) {
+    let dobValid = dobVerification(dob);
+    if (!dobValid) {
+      alert("DOB invalid. Please use M/D/YYYY format.");
+      return false;
     }
   }
-  addEachTo(family["grandchildren"], "li", "grandchildrenFamily", "grandchildren");
+
+  let fields = {};
+
+  // Retrieve data from page
+  fields["first name"] = getValueOrDefault(document.getElementById("fnameSearch").value);
+  fields["last name"] = getValueOrDefault(document.getElementById("lnameSearch").value);
+  fields["gender"] = getValueOrDefault(document.getElementById("genderSearch").value);
+  fields["age"] = getValueOrDefault(document.getElementById("ageSearch").value);
+  fields["dob"] = getValueOrDefault(document.getElementById("dobSearch").value);
+  fields["height"] = getValueOrDefault(document.getElementById("heightSearch").value);
+  fields["weight"] = getValueOrDefault(document.getElementById("weightSearch").value);
+  fields["eye color"] = getValueOrDefault(document.getElementById("eyecolorSearch").value);
+  fields["occupation"] = getValueOrDefault(document.getElementById("occupationSearch").value);
+
+  return fields;
 }
 
-function addEachTo(array, type, addTo, field, value=-1) {
-  if (array.length > 0) {
-    for (let i = 0; i < array.length; i++) {
-      const person = array[i];
-      let personName = `${person.firstName} ${person.lastName}`
-      addItemTo(personName, type, addTo)
-    }
+// Makes sure empty fields aren't added to search
+function getValueOrDefault(value) {
+  if (value){
+    return value;
   } else {
-    addItemTo(`No ${field} on file`, type, addTo);
+    return -1;
   }
 }
 
-function addItemTo(textValue, type, addTo, value=-1) {
-  let newItemText = document.createTextNode(textValue);
-  let newItem = document.createElement(type);
-  newItem.appendChild(newItemText);
-  if (value != -1) {
-    newItem.value = value;
-  }
-  document.getElementById(addTo).appendChild(newItem);
-}
-
+// Used only to get one person from a list of multiple people
 function selectPerson(people) {
   let selectedPersonId = document.getElementById("peopleSelection").value;
   let selectedPerson = findById(Number(selectedPersonId), people);
@@ -564,34 +553,69 @@ function selectPerson(people) {
   showPage("resultsPage", "multipleResultsPage");
 }
 
+//
+// HTML Manipulation
+//
+
+// Used to switch "pages" of document without refreshing
 function showPage(pageToShow, pageToHide) {
   document.getElementById(pageToHide).style.display = "none";
   document.getElementById(pageToShow).style.display = "block";
   return false;
 }
 
-function newSearch(currentPage) {
-  prepareSearchPage();
-  showPage("searchPage", currentPage);
+// Reset all items in HTML object
+function resetList(field, countId) {
+  let countObject = document.getElementById(countId);
+  let count = countObject.value;
+  for (let i = 0; i < count; i++) {
+    let currentId = `${field}${i}`
+    let element = document.getElementById(currentId);
+    element.parentElement.removeChild(element);
+  }
+  if (document.getElementById(`${field}1000`)) {
+    let element = document.getElementById(`${field}1000`);
+    element.parentElement.removeChild(element);
+  }
+
+  countObject.value = 0;
   return false;
 }
 
-function prepareResultsPage(results) {
-  // Get the person out of the array of people
-  let person = results[0];
-
-  // Reassign the values on all the fields
-  document.getElementById("fnameResults").innerHTML = person["firstName"];
-  document.getElementById("lnameResults").innerHTML = person["lastName"];
-  document.getElementById("genderResults").innerHTML = person["gender"];
-  document.getElementById("dobResults").innerHTML = person["dob"];
-  document.getElementById("heightResults").innerHTML = person["height"];
-  document.getElementById("weightResults").innerHTML = person["weight"];
-  document.getElementById("eyecolorResults").innerHTML = person["eyeColor"];
-  document.getElementById("occupationResults").innerHTML = person["occupation"];
-  return false;
+// Add all items in array to HTML object
+function addEachTo(array, type, addTo, field, countId=-1) {
+  if (array.length > 0) {
+    for (let i = 0; i < array.length; i++) {
+      const person = array[i];
+      let personName = `${person.firstName} ${person.lastName}`
+      addItemTo(personName, type, addTo, "", field, i)
+    }
+  } else {
+    addItemTo(`No ${field} on file`, type, addTo, "", field, 1000);
+  }
 }
 
+// Add one item to HTML object
+function addItemTo(textValue, type, addTo, value, field, countId) {
+  let currentParent = document.getElementById(addTo);
+  let newItemText = document.createTextNode(textValue);
+  let newItem = document.createElement(type);
+  newItem.appendChild(newItemText);
+  if (countId != -1) {
+    newItem.id = `${field}${countId}`;
+  }
+  if (value != "") {
+    newItem.value = value;
+  }
+  currentParent.appendChild(newItem);
+}
+
+
+//
+// Page preparation & scrubbing
+//
+
+// Clean search page before navigating to it
 function prepareSearchPage() {
   // Empty all fields
   document.getElementById("fnameSearch").value = "";
@@ -605,27 +629,83 @@ function prepareSearchPage() {
   return false;
 }
 
-function getInputs() {
-  let fields = {};
-
-  // Retrieve data from page
-  fields["first name"] = getValueOrDefault(document.getElementById("fnameSearch").value);
-  fields["last name"] = getValueOrDefault(document.getElementById("lnameSearch").value);
-  fields["gender"] = getValueOrDefault(document.getElementById("genderSearch").value);
-  fields["dob"] = getValueOrDefault(document.getElementById("dobSearch").value);
-  fields["height"] = getValueOrDefault(document.getElementById("heightSearch").value);
-  fields["weight"] = getValueOrDefault(document.getElementById("weightSearch").value);
-  fields["eye color"] = getValueOrDefault(document.getElementById("eyecolorSearch").value);
-  fields["occupation"] = getValueOrDefault(document.getElementById("occupationSearch").value);
-
-  return fields;
-}
-
-function getValueOrDefault(value) {
-  if (value){
-    return value;
-  } else {
-    return -1;
+// Get all of the people found in the search into dropdown
+function prepareMultipleResultsPage(results) {
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i];
+    let newItemText = `${result.firstName} ${result.lastName}`;
+    addItemTo(newItemText, "option", "peopleSelection", result.id, "", -1);
   }
 }
+
+// Fill out data for results page before showing
+function prepareResultsPage(results) {
+  // Get the person out of the array of people
+  let person = results[0];
+
+  // Reassign the values on all the fields
+  document.getElementById("fnameResults").innerHTML = person["firstName"];
+  document.getElementById("lnameResults").innerHTML = person["lastName"];
+  document.getElementById("genderResults").innerHTML = person["gender"];
+  document.getElementById("ageResults").innerHTML = getAge(person["dob"]);
+  document.getElementById("dobResults").innerHTML = person["dob"];
+  document.getElementById("heightResults").innerHTML = person["height"];
+  document.getElementById("weightResults").innerHTML = person["weight"];
+  document.getElementById("eyecolorResults").innerHTML = person["eyeColor"];
+  document.getElementById("occupationResults").innerHTML = person["occupation"];
+  return false;
+}
+
+// Fill out data for family page before showing
+function prepareFamilyPage(personArray, people) {
+  resetFamilyPage();
+  let person = personArray[0];
+  let family = findFamily(person, people);
+  if (family["currentSpouse"].length == 1) {
+    let spouse = family["currentSpouse"][0];
+    document.getElementById("spouseFamily").value = `${spouse.firstName} ${spouse.lastName}`;
+  } else {
+    document.getElementById("spouseFamily").value = "No spouse on file";
+  }
+
+  // Need to keep track of counts to get rid of elements during reset
+  document.getElementById("firstAndLastFamily").value = `${person.firstName} ${person.lastName}`;
+  addEachTo(family["parents"], "li", "parentsFamily", "parents");
+  document.getElementById("numberOfParents").value = `${family["parents"].length}`;
+  addEachTo(family["siblings"], "li", "siblingsFamily", "siblings");
+  document.getElementById("numberOfSiblings").value = `${family["siblings"].length}`;
+  addEachTo(family["children"], "li", "childrenFamily", "children");
+  document.getElementById("numberOfChildren").value = `${family["children"].length}`;
+
+  // Get grandchildren from list of children
+  family["grandchildren"] = []
+  for (let i = 0; i < family["children"].length; i++) {
+    let grandchildren = findChildren(family["children"][i].id, people);
+    for (let j = 0; j < grandchildren.length; j++) {
+      const grandchild = grandchildren[j];
+      family["grandchildren"].push(grandchild);
+      document.getElementById("numberOfGrandchildren").value++;
+    }
+  }
+  addEachTo(family["grandchildren"], "li", "grandchildrenFamily", "grandchildren");
+}
+
+// Reset all fields on family page
+function resetFamilyPage() {
+  document.getElementById("firstAndLastFamily").value = "";
+  document.getElementById("spouseFamily").value = "";
+  resetList("parents", "numberOfParents");
+  resetList("siblings", "numberOfSiblings");
+  resetList("children", "numberOfChildren");
+  resetList("grandchildren", "numberOfGrandchildren");
+}
+
+// Navigate back to the search page after clearing it
+function newSearch(currentPage) {
+  prepareSearchPage();
+  showPage("searchPage", currentPage);
+  return false;
+}
+
+
 //#endregion

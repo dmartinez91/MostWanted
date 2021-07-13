@@ -33,6 +33,10 @@
         </select>
         <br>
 
+        <label for="ageSearch">Age: </label>
+        <input type="number" id="ageSearch" name="ageSearch">
+        <br>
+
         <label for="dobSearch">DOB: </label>
         <input type="text" id="dobSearch" name="dobSearch">
         <br>
@@ -96,6 +100,10 @@
           <td><p id="genderResults"></p></td>
         </tr>
         <tr>
+          <td>Age: </td>
+          <td><p id="ageResults"></p></td>
+        </tr>
+        <tr>
           <td>DOB: </td>
           <td><p id="dobResults"></p></td>
         </tr>
@@ -133,15 +141,23 @@
       <p id="spouseFamily"></p>
       <h3>Parents: </h3>
       <ul id="parentsFamily">
+        <li id="parents1000"></li>
+        <li id="numberOfParents" value="0" style="display:none"></li>
       </ul>
       <h3>Siblings: </h3>
       <ul id="siblingsFamily">
+        <li id="siblings1000"></li>
+        <li id="numberOfSiblings" value="0" style="display:none"></li>
       </ul>
       <h3>Children: </h3>
       <ul id="childrenFamily">
+        <li id="children1000"></li>
+        <li id="numberOfChildren" value="0" style="display:none"></li>
       </ul>
       <h3>Grandchildren: </h3>
       <ul id="grandchildrenFamily">
+        <li id="grandchildren1000"></li>
+        <li id="numberOfGrandchildren" value="0" style="display:none"></li>
       </ul>
       <button onclick="showPage('resultsPage', 'familyPage')">Back to person</button>
       <button onclick="newSearch('familyPage')">New Search</button>
