@@ -118,6 +118,7 @@ function searchMenu(people){
 //#endregion
 
 //Filter functions.
+//Functions to filter data.
 /////////////////////////////////////////////////////////////////
 //#region 
 
